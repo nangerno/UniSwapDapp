@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { abi as Mock_ABI } from "./mockABI.json";
 import { abi as Weth_ABI } from "./wethABI.json";
 import { Token, Fetcher, Route } from "@uniswap/sdk";
+import { abi as Factory_ABI } from "@uniswap/v2-core/build/IUniswapV2Factory.json";
 
 let provider, signer, mockContract, wethContract;
 
