@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 import { abi as Mock_ABI } from "./mockABI.json";
 import { abi as Weth_ABI } from "./wethABI.json";
 import { Token, Fetcher, Route } from "@uniswap/sdk";
-require(".dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 let provider, signer, mockContract, wethContract;
 
 const connectWalletBtn = document.getElementById("connectWallet");
