@@ -22,12 +22,12 @@ async function connectWallet() {
       await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
       mockContract = new ethers.Contract(
-        import.meta.env.TOKEN_ADDRESS,
+        import.meta.env.VITE_TOKEN_ADDRESS,
         Mock_ABI,
         signer
       );
       wethContract = new ethers.Contract(
-        import.meta.env.WETH_ADDRESS,
+        import.meta.env.VITE_WETH_ADDRESS,
         Weth_ABI,
         signer
       );
@@ -81,13 +81,13 @@ async function fetchTokenPrice() {
     const decimalValue = Number(tokenDecimals);
 
     const mockToken = new Token(
-      import.meta.env.SEPOLIA_CHAIN_ID,
-      import.meta.env.TOKEN_ADDRESS,
+      import.meta.env.VITE_SEPOLIA_CHAIN_ID,
+      import.meta.env.VITE_TOKEN_ADDRESS,
       decimalValue
     );
     const weth = new Token(
-      import.meta.env.SEPOLIA_CHAIN_ID,
-      import.meta.env.WETH_ADDRESS,
+      import.meta.env.VITE_SEPOLIA_CHAIN_ID,
+      import.meta.env.VITE_WETH_ADDRESS,
       18
     );
 
