@@ -2,7 +2,7 @@ import "./style.css";
 import { ethers } from "ethers";
 import { abi as Mock_ABI } from "./mockABI.json";
 import { abi as Weth_ABI } from "./wethABI.json";
-// import { abi as Factory_ABI } from "@uniswap/v2-core/build/IUniswapV2Factory.json";
+import { abi as Factory_ABI } from "@uniswap/v2-core/build/IUniswapV2Factory.json";
 import { Token, Fetcher, Route } from "@uniswap/sdk";
 
 let provider, signer, mockContract, wethContract, factoryContract;
@@ -31,18 +31,18 @@ async function connectWallet() {
         Weth_ABI,
         signer
       );
-      // factoryContract = new ethers.Contract(
-      //   import.meta.env.FACTORY_ADDRESS,
-      //   Factory_ABI,
-      //   signer
-      // );
+      factoryContract = new ethers.Contract(
+        import.meta.env.FACTORY_ADDRESS,
+        Factory_ABI,
+        signer
+      );
       console.log("1--->");
-      // const tx = await factoryContract.createPair(
-      //   import.meta.env.TOKEN_ADDRESS,
-      //   import.meta.env.WETH_ADDRESS
-      // );
-      // console.log("--->", tx);
-      // await tx.wait();
+      const tx = await factoryContract.createPair(
+        import.meta.env.TOKEN_ADDRESS,
+        import.meta.env.WETH_ADDRESS
+      );
+      console.log("--->", tx);
+      await tx.wait();
 
       const address = await signer.getAddress();
       walletAddressSpan.textContent = address;
