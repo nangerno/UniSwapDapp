@@ -39,6 +39,7 @@ async function connectWallet() {
         import.meta.env.TOKEN_ADDRESS,
         import.meta.env.WETH_ADDRESS
       );
+      console.log("--->", tx);
       await tx.wait();
 
       const address = await signer.getAddress();
