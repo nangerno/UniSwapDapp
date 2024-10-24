@@ -1,0 +1,21 @@
+{
+  "name": "dapp-dex",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5000",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "@uniswap/sdk": "^3.0.3",
+    "@uniswap/sdk-core": "^5.9.0",
+    "@uniswap/v2-sdk": "^4.6.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4"
+  }
+}
