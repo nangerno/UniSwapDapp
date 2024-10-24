@@ -13,6 +13,8 @@ const tokenBalanceSpan = document.getElementById("tokenBalance");
 const tokenPriceSpan = document.getElementById("tokenPrice");
 const networkStatusSpan = document.getElementById("networkStatus");
 
+console.log(import.meta.env.TOKEN_ADDRESS);
+
 async function connectWallet() {
   if (typeof window.ethereum !== "undefined") {
     try {
