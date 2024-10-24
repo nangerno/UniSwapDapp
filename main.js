@@ -3,8 +3,7 @@ import { ethers } from "ethers";
 import { abi as Mock_ABI } from "./mockABI.json";
 import { abi as Weth_ABI } from "./wethABI.json";
 import { Token, Fetcher, Route } from "@uniswap/sdk";
-import dotenv from "dotenv";
-dotenv.config();
+
 let provider, signer, mockContract, wethContract;
 
 const connectWalletBtn = document.getElementById("connectWallet");
@@ -20,12 +19,12 @@ async function connectWallet() {
       await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
       mockContract = new ethers.Contract(
-        process.env.TOKEN_ADDRESS,
+        import.meta.env.TOKEN_ADDRESS,
         Mock_ABI,
         signer
       );
       wethContract = new ethers.Contract(
-        process.env.WETH_ADDRESS,
+        import.meta.env.WETH_ADDRESS,
         Weth_ABI,
         signer
       );
@@ -67,13 +66,13 @@ async function fetchTokenPrice() {
     const decimalValue = Number(tokenDecimals);
 
     const mockToken = new Token(
-      process.env.SEPOLIA_CHAIN_ID,
-      process.env.TOKEN_ADDRESS,
+      import.meta.env.SEPOLIA_CHAIN_ID,
+      import.meta.env.TOKEN_ADDRESS,
       decimalValue
     );
     const weth = new Token(
-      process.env.SEPOLIA_CHAIN_ID,
-      process.env.WETH_ADDRESS,
+      import.meta.env.SEPOLIA_CHAIN_ID,
+      import.meta.env.WETH_ADDRESS,
       18
     );
 
