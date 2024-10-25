@@ -36,13 +36,14 @@ async function connectWallet() {
         Factory_ABI,
         signer
       );
-      console.log("1--->");
+
       const tx = await factoryContract.createPair(
         import.meta.env.TOKEN_ADDRESS,
         import.meta.env.WETH_ADDRESS
       );
-      console.log("--->", tx);
+
       await tx.wait();
+      console.log("--->", tx);
 
       const address = await signer.getAddress();
       walletAddressSpan.textContent = address;
