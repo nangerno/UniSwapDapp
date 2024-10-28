@@ -135,8 +135,13 @@ async function init() {
       console.log("Wallet Address:", walletAddress);
 
       // Ensure router address is checksummed
-      const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
-      console.log("Checksummed Router Address:", checksummedRouterAddress);
+      let checksummedRouterAddress;
+      try {
+        checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
+        console.log("Checksummed Router Address:", checksummedRouterAddress);
+      } catch (error) {
+        throw new Error("Invalid router address: " + error.message);
+      }
 
       // Execute liquidity addition
       await addLiquidity(checksummedRouterAddress);
