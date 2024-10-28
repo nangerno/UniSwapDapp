@@ -135,6 +135,7 @@ async function init() {
       console.log("Wallet Address:", walletAddress);
 
       // Ensure router address is checksummed
+      console.log("Router Address from env:", routerAddress);
       let checksummedRouterAddress;
       try {
         checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
