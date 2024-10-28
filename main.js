@@ -135,7 +135,7 @@ async function init() {
       console.log("Wallet Address:", walletAddress);
 
       // Ensure router address is checksummed
-      const checksummedRouterAddress = ethers.getAddress(routerAddress);
+      const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
       console.log("Checksummed Router Address:", checksummedRouterAddress);
 
       // Execute liquidity addition
