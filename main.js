@@ -118,23 +118,28 @@ const mockUSDCAddress = import.meta.env.VITE_MOCK_USDC_ADDRESS;
 const routerAddress = import.meta.env.VITE_UNISWAP_V2_ROUTER_ADDRESS;
 
 // Initialize provider and wallet
-let provider, wallet;
-console.log("VITE_PRIVATE_KEY:", import.meta.env.VITE_PRIVATE_KEY);
+let provider, signer;
 
 async function init() {
   if (typeof window.ethereum !== "undefined") {
-    provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []); // Request access to accounts
-    const privateKey = import.meta.env.VITE_PRIVATE_KEY;
-    console.log("Private Key:", privateKey);
-    wallet = new ethers.Wallet(privateKey, provider);
+    try {
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []); // Request access to accounts
 
-    // Ensure router address is checksummed
-    const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
-    console.log("Checksummed Router Address:", checksummedRouterAddress);
+      // Initialize signer from the provider
+      signer = await provider.getSigner();
+      const walletAddress = await signer.getAddress();
+      console.log("Wallet Address:", walletAddress);
 
-    // Execute liquidity addition
-    await addLiquidity(checksummedRouterAddress);
+      // Ensure router address is checksummed
+      const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
+      console.log("Checksummed Router Address:", checksummedRouterAddress);
+
+      // Execute liquidity addition
+      await addLiquidity(checksummedRouterAddress);
+    } catch (error) {
+      console.error("Error during initialization:", error);
+    }
   } else {
     console.error("Please install MetaMask!");
   }
@@ -143,7 +148,7 @@ async function init() {
 async function addLiquidity(checksummedRouterAddress) {
   try {
     // Initialize MockUSDC contract
-    const mockUSDC = new ethers.Contract(mockUSDCAddress, Mock_ABI, wallet);
+    const mockUSDC = new ethers.Contract(mockUSDCAddress, Mock_ABI, signer);
 
     // Amounts to use in liquidity pool
     const tokenAmount = ethers.utils.parseUnits("1000", 18); // 1000 MockUSDC
@@ -161,7 +166,7 @@ async function addLiquidity(checksummedRouterAddress) {
     const routerContract = new ethers.Contract(
       checksummedRouterAddress,
       Router_ABI,
-      wallet
+      signer
     );
     const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10-minute deadline
 
@@ -170,7 +175,7 @@ async function addLiquidity(checksummedRouterAddress) {
       tokenAmount,
       0, // Minimum amount of MockUSDC (to handle slippage)
       0, // Minimum amount of ETH (to handle slippage)
-      wallet.address, // Recipient of LP tokens
+      walletAddress, // Recipient of LP tokens
       deadline,
       { value: ethAmount } // ETH to send
     );
