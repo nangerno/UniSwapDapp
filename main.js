@@ -128,10 +128,7 @@ async function init() {
       await provider.send("eth_requestAccounts", []); // Request access to accounts
 
       // Initialize signer
-      signer = provider.getSigner();
-
-      // Wait for the signer to be available
-      signer = await signer; // This line can cause issues if not awaited properly
+      signer = await provider.getSigner();
 
       // Fetch wallet address from the signer
       const walletAddress = await signer.getAddress();
