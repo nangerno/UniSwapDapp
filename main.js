@@ -111,50 +111,74 @@
 import "./style.css";
 import { ethers } from "ethers";
 import { abi as Mock_ABI } from "./mockABI.json";
-import { abi as Router_ABI } from "./uniswapRouterABI.json";
-
-const provider = new ethers.BrowserProvider(window.ethereum);
-await provider.send("eth_requestAccounts", []); // Request access to accounts
-
-const wallet = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
+import Router_ABI from "./uniswapRouterABI.json";
 
 // Contract addresses from environment variables
 const mockUSDCAddress = import.meta.env.VITE_MOCK_USDC_ADDRESS;
 const routerAddress = import.meta.env.VITE_UNISWAP_V2_ROUTER_ADDRESS;
 
-// Amounts to use in liquidity pool
-const tokenAmount = ethers.parseUnits("1000", 18); // 1000 MockUSDC
-const ethAmount = ethers.parseEther("0.1"); // 0.1 ETH
+// Initialize provider and wallet
+let provider, wallet;
 
-async function addLiquidity() {
-  // Initialize MockUSDC contract
-  const mockUSDC = new ethers.Contract(mockUSDCAddress, Mock_ABI, wallet);
+async function init() {
+  if (typeof window.ethereum !== "undefined") {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []); // Request access to accounts
+    const signer = await provider.getSigner();
+    wallet = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
 
-  // Step 1: Approve Router to spend MockUSDC
-  const approvalTx = await mockUSDC.approve(routerAddress, tokenAmount);
-  await approvalTx.wait();
-  console.log("Approved Uniswap Router to spend MockUSDC");
+    // Ensure router address is checksummed
+    const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
+    console.log("Checksummed Router Address:", checksummedRouterAddress);
 
-  // Initialize Router contract
-  const router = new ethers.Contract(routerAddress, Router_ABI, wallet);
-  const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10-minute deadline
-
-  // Step 2: Add Liquidity
-  const addLiquidityTx = await router.addLiquidityETH(
-    mockUSDCAddress,
-    tokenAmount,
-    0, // Minimum amount of MockUSDC (to handle slippage)
-    0, // Minimum amount of ETH (to handle slippage)
-    wallet.address, // Recipient of LP tokens
-    deadline,
-    { value: ethAmount } // ETH to send
-  );
-
-  const receipt = await addLiquidityTx.wait();
-  console.log("Liquidity added, transaction hash:", receipt.transactionHash);
+    // Execute liquidity addition
+    await addLiquidity(checksummedRouterAddress);
+  } else {
+    console.error("Please install MetaMask!");
+  }
 }
 
-// Execute the addLiquidity function
-addLiquidity()
-  .then(() => console.log("Liquidity provision complete"))
-  .catch(console.error);
+async function addLiquidity(checksummedRouterAddress) {
+  try {
+    // Initialize MockUSDC contract
+    const mockUSDC = new ethers.Contract(mockUSDCAddress, Mock_ABI, wallet);
+
+    // Amounts to use in liquidity pool
+    const tokenAmount = ethers.utils.parseUnits("1000", 18); // 1000 MockUSDC
+    const ethAmount = ethers.utils.parseEther("0.1"); // 0.1 ETH
+
+    // Step 1: Approve Router to spend MockUSDC
+    const approvalTx = await mockUSDC.approve(
+      checksummedRouterAddress,
+      tokenAmount
+    );
+    await approvalTx.wait();
+    console.log("Approved Uniswap Router to spend MockUSDC");
+
+    // Step 2: Add Liquidity
+    const routerContract = new ethers.Contract(
+      checksummedRouterAddress,
+      Router_ABI,
+      wallet
+    );
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10-minute deadline
+
+    const addLiquidityTx = await routerContract.addLiquidityETH(
+      mockUSDCAddress,
+      tokenAmount,
+      0, // Minimum amount of MockUSDC (to handle slippage)
+      0, // Minimum amount of ETH (to handle slippage)
+      wallet.address, // Recipient of LP tokens
+      deadline,
+      { value: ethAmount } // ETH to send
+    );
+
+    const receipt = await addLiquidityTx.wait();
+    console.log("Liquidity added, transaction hash:", receipt.transactionHash);
+  } catch (error) {
+    console.error("Error adding liquidity:", error);
+  }
+}
+
+// Execute the initialization function
+init().catch(console.error);
