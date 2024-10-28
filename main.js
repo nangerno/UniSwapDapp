@@ -117,17 +117,23 @@ import Router_ABI from "./uniswapRouterABI.json";
 const mockUSDCAddress = import.meta.env.VITE_MOCK_USDC_ADDRESS;
 const routerAddress = import.meta.env.VITE_UNISWAP_V2_ROUTER_ADDRESS;
 
-// Initialize provider and wallet
+// Initialize provider and signer
 let provider, signer;
 
 async function init() {
   if (typeof window.ethereum !== "undefined") {
     try {
+      // Create provider from MetaMask
       provider = new ethers.BrowserProvider(window.ethereum);
       await provider.send("eth_requestAccounts", []); // Request access to accounts
 
-      // Initialize signer from the provider
-      signer = await provider.getSigner();
+      // Initialize signer
+      signer = provider.getSigner();
+
+      // Wait for the signer to be available
+      signer = await signer; // This line can cause issues if not awaited properly
+
+      // Fetch wallet address from the signer
       const walletAddress = await signer.getAddress();
       console.log("Wallet Address:", walletAddress);
 
