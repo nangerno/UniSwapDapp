@@ -120,6 +120,7 @@ const routerAddress = import.meta.env.VITE_UNISWAP_V2_ROUTER_ADDRESS;
 // Initialize provider and wallet
 let provider, wallet;
 console.log("VITE_PRIVATE_KEY:", import.meta.env.VITE_PRIVATE_KEY);
+
 async function init() {
   if (typeof window.ethereum !== "undefined") {
     provider = new ethers.BrowserProvider(window.ethereum);
