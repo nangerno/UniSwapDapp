@@ -124,8 +124,9 @@ async function init() {
   if (typeof window.ethereum !== "undefined") {
     provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("eth_requestAccounts", []); // Request access to accounts
-    const signer = await provider.getSigner();
-    wallet = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
+    const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+    console.log("Private Key:", privateKey);
+    wallet = new ethers.Wallet(privateKey, provider);
 
     // Ensure router address is checksummed
     const checksummedRouterAddress = ethers.utils.getAddress(routerAddress);
